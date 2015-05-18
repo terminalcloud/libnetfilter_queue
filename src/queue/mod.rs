@@ -26,7 +26,7 @@ pub enum CopyMode {
     None,
     /// Packet metadata only
     Metadata,
-    /// If you copy the packet, you must also specify the size of the packet to copy
+    /// If you copy the packet, you must also specify the size of the packet to copy (in bytes)
     Packet(u16)
 }
 
@@ -120,7 +120,7 @@ impl<F: PacketHandler> Queue<F> {
     /// For example, to copy enough to parse `IPHeader`, use `set_mode_sized::<IPHeader>()`.
     pub fn set_mode_sized<P: Payload>(&mut self) -> Result<(), Error> {
         let bytes = mem::size_of::<P>() as u16;
-        self.set_mode(CopyMode::Packet(bytes * 8))
+        self.set_mode(CopyMode::Packet(bytes))
     }
 
     /// Set the max-length for this queue

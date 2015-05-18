@@ -1,6 +1,6 @@
 [package]
 name = "netfilter_queue"
-version = "0.2.1"
+version = "0.2.2"
 authors = [
     "Laurie Clark-Michalek <lclarkmichalek@gmail.com>",
     "Zach Pomerantz <zach@terminal.com>"

@@ -90,7 +90,7 @@ impl Handle {
     /// Start listening using any attached queues
     ///
     /// This will only listen on queues attached with `queue_builder`.
-    /// `length` determines the amount of a packet to grab from the queue at a time, in bits.
+    /// `length` determines the amount of a packet to grab from the queue at a time, in bytes.
     /// If you are using `queue::Queue::CopyMode(SIZE)` it must match `SIZE`.
     pub fn start(&mut self, length: u16) -> Result<(), Error> {
         unsafe {
@@ -102,9 +102,11 @@ impl Handle {
             let fd = nfq_fd(self.ptr);
 
             loop {
-                match recv(fd, buffer, length as u64, 0) {
-                    rv if rv >=0 => { 
-                        nfq_handle_packet(self.ptr, buffer as *mut c_char, length as i32);
+                println!("{}", length);
+                match recv(fd, buffer, 4096 as u64, 0) {
+                    rv if rv >=0 => {
+                        println!("Received: {}", rv);
+                        nfq_handle_packet(self.ptr, buffer as *mut c_char, rv as i32);
                     },
                     _ => {
                         free(buffer as *mut c_void);
@@ -126,6 +128,6 @@ impl Handle {
     pub fn start_sized<P: Payload>(&mut self) -> Result<(), Error> {
         let bytes = mem::size_of::<P>() as u16;
         // netlink header (128 bits) + payload
-        self.start(128 + bytes * 8)
+        self.start(16 + bytes)
     }
 }
