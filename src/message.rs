@@ -6,7 +6,6 @@ use libc::*;
 use std::mem;
 use std::ptr::null;
 use std::net::Ipv4Addr;
-use num::traits::PrimInt;
 use error::*;
 use util::*;
 use ffi::*;
