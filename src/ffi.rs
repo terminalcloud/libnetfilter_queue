@@ -1,7 +1,6 @@
 #![allow(non_camel_case_types)]
 
 use libc::*;
-use num::traits::PrimInt;
 
 pub const NF_DROP: u32 = 0;
 pub const NF_ACCEPT: u32 = 1;
@@ -11,17 +10,17 @@ pub const NF_REPEAT: u32 = 4;
 pub const NF_STOP: u32 = 5;
 
 #[repr(C)]
-pub struct nfq_handle;
+pub struct nfq_handle(c_void);
 
 #[repr(C)]
 /// The handle into NFQueue
-pub struct nfq_q_handle;
+pub struct nfq_q_handle(c_void);
 
 #[repr(C)]
-pub struct nfgenmsg;
+pub struct nfgenmsg(c_void);
 
 #[repr(C)]
-pub struct nfq_data;
+pub struct nfq_data(c_void);
 
 #[repr(C,packed)]
 /// The NFQueue specific packet data
