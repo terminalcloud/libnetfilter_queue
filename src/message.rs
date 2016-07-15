@@ -95,7 +95,7 @@ impl<'a> Message<'a> {
     /// and `handle.start_sized_to_payload` methods.
     /// See `examples/get_addrs.rs`.
     pub unsafe fn ip_header(&self) -> Result<&IPHeader, Error> {
-        self.payload::<IPHeader>()
+        self.payload::<IPHeader>().map(|x| x.0)
     }
 
     /// Parse a sized `Payload` from the message
@@ -104,15 +104,15 @@ impl<'a> Message<'a> {
     /// The best way to do this is with the `queue_builder.set_copy_mode_sized_to_payload`
     /// and `handle.start_sized_to_payload` methods.
     /// See `examples/get_addrs.rs`.
-    pub unsafe fn payload<A: Payload>(&self) -> Result<&A, Error> {
+    pub unsafe fn payload<A: Payload>(&self) -> Result<(&A, usize), Error> {
         let data: *const A = null();
         let ptr: *mut *mut A = &mut (data as *mut A);
-        let _ = match nfq_get_payload(self.ptr, ptr as *mut *mut c_uchar) {
+        let n = match nfq_get_payload(self.ptr, ptr as *mut *mut c_uchar) {
             -1 => return Err(error(Reason::GetPayload, "Failed to get payload", Some(-1))),
-            _ => ()
+            n => n
         };
         match as_ref(&data) {
-            Some(payload) => Ok(payload),
+            Some(payload) => Ok((payload, n as usize)),
             None => Err(error(Reason::GetPayload, "Failed to get payload", None))
         }
     }
