@@ -16,6 +16,7 @@ use ffi::*;
 /// Protocol Family
 ///
 /// NFQueue will only deal with IP, so only those families are made available.
+#[derive(Clone,Copy)]
 pub enum ProtocolFamily {
     /// IPv4 Address Family
     INET = AF_INET as isize,
@@ -58,6 +59,7 @@ impl Handle {
     pub fn bind(&mut self, proto: ProtocolFamily) -> Result<(), Error> {
         let _lock = LOCK.lock().unwrap();
 
+        unsafe { nfq_unbind_pf(self.ptr, proto as uint16_t) };
         let res = unsafe { nfq_bind_pf(self.ptr, proto as uint16_t) };
         if res < 0 {
             Err(error(Reason::Bind, "Failed to bind handle", Some(res)))
