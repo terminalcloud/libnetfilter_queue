@@ -4,7 +4,7 @@
 
 use libc::*;
 use std::mem;
-use std::ptr::null;
+use std::ptr::null_mut;
 use std::net::Ipv4Addr;
 use error::*;
 use util::*;
@@ -105,13 +105,14 @@ impl<'a> Message<'a> {
     /// and `handle.start_sized_to_payload` methods.
     /// See `examples/get_addrs.rs`.
     pub unsafe fn payload<A: Payload>(&self) -> Result<(&A, usize), Error> {
-        let data: *const A = null();
-        let ptr: *mut *mut A = &mut (data as *mut A);
+        let mut data: *mut A = null_mut();
+        let ptr: *mut *mut A = &mut data;
         let n = match nfq_get_payload(self.ptr, ptr as *mut *mut c_uchar) {
             -1 => return Err(error(Reason::GetPayload, "Failed to get payload", Some(-1))),
             n => n
         };
-        match as_ref(&data) {
+        println!("{:?}, n={}", data, n);
+        match as_mut(&data) {
             Some(payload) => Ok((payload, n as usize)),
             None => Err(error(Reason::GetPayload, "Failed to get payload", None))
         }
