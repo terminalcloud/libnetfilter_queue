@@ -111,7 +111,6 @@ impl<'a> Message<'a> {
             -1 => return Err(error(Reason::GetPayload, "Failed to get payload", Some(-1))),
             n => n
         };
-        println!("{:?}, n={}", data, n);
         match as_mut(&data) {
             Some(payload) => Ok((payload, n as usize)),
             None => Err(error(Reason::GetPayload, "Failed to get payload", None))
