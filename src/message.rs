@@ -17,6 +17,7 @@ pub trait Payload {}
 #[allow(dead_code)]
 #[allow(missing_docs)]
 /// A `Payload` to fetch and parse an IP packet header
+#[repr(C)]
 pub struct IPHeader {
     pub version_and_header_raw: u8,
     pub dscp_raw: u8,
