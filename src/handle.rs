@@ -97,14 +97,14 @@ impl Handle {
     pub fn start(&mut self, length: u16) -> Result<(), Error> {
         unsafe {
             // TODO: Get rid of malloc
-            let buffer: *mut c_void = malloc(length as u64);
+            let buffer: *mut c_void = malloc(length as usize);
             if buffer.is_null() {
                 panic!("Failed to allocate packet buffer");
             }
             let fd = nfq_fd(self.ptr);
 
             loop {
-                match recv(fd, buffer, length as u64, 0) {
+                match recv(fd, buffer, length as usize, 0) {
                     rv if rv >=0 => { 
                         nfq_handle_packet(self.ptr, buffer as *mut c_char, length as i32);
                     },

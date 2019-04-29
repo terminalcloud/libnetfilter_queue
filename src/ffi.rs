@@ -2,13 +2,6 @@
 
 use libc::*;
 
-pub const NF_DROP: u32 = 0;
-pub const NF_ACCEPT: u32 = 1;
-pub const NF_STOLEN: u32 = 2;
-pub const NF_QUEUE: u32 = 3;
-pub const NF_REPEAT: u32 = 4;
-pub const NF_STOP: u32 = 5;
-
 #[repr(C)]
 pub struct nfq_handle(c_void);
 

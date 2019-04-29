@@ -1,7 +1,8 @@
 [package]
 name = "netfilter_queue"
-version = "0.2.1"
+version = "0.2.2"
 authors = [
+    "lilydjwg <lilydjwg@gmail.com>",
     "Laurie Clark-Michalek <lclarkmichalek@gmail.com>",
     "Zach Pomerantz <zach@terminal.com>"
 ]
@@ -13,7 +14,7 @@ keywords = ["iptables", "nf", "nfq", "netfilter", "netfilter_queue"]
 exclude = [".gitignore"]
 
 [dependencies]
-lazy_static = "0.1.*"
-libc = "0.1"
-num = "0.1.*"
-errno = "0.1.*"
+lazy_static = "1"
+libc = "0.2"
+num = "0.2"
+errno = "0.2"
