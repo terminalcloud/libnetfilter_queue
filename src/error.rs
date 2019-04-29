@@ -21,13 +21,11 @@ pub enum Reason {
 pub struct Error {
     reason: Reason,
     description: String,
-    cause: Option<Box<Base>>,
 }
 
 impl fmt::Debug for Error {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        let msg = format!("{:?}: {:?} (cause: {:?})",
-                          self.reason, self.description, self.cause);
+        let msg = format!("{:?}: {:?}", self.reason, self.description);
         formatter.write_str(msg.as_ref())
     }
 }
@@ -44,12 +42,12 @@ impl Base for Error {
         self.description.as_ref()
     }
     fn cause(&self) -> Option<&Base> {
-        self.cause.as_ref().map(|c| &**c)
+        None
     }
 }
 
 pub fn error(reason: Reason, msg: &str, res: Option<c_int>) -> Error {
-    let errno = nfq_errno;
+    let errno = unsafe { nfq_errno };
     let desc = match res {
         Some(r) => format!("{} (errno: {}, res: {})", msg, errno, r),
         None => format!("{}, (errno: {})", msg, errno)
@@ -57,6 +55,5 @@ pub fn error(reason: Reason, msg: &str, res: Option<c_int>) -> Error {
     Error {
         reason: reason,
         description: desc,
-        cause: None,
     }
 }
