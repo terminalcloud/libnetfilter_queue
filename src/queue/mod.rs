@@ -16,9 +16,9 @@ use lock::NFQ_LOCK as LOCK;
 
 use ffi::*;
 
-const NFQNL_COPY_NONE: uint8_t = 0;
-const NFQNL_COPY_META: uint8_t = 1;
-const NFQNL_COPY_PACKET: uint8_t = 2;
+const NFQNL_COPY_NONE: u8 = 0;
+const NFQNL_COPY_META: u8 = 1;
+const NFQNL_COPY_PACKET: u8 = 2;
 
 /// The amount of data to be copied to userspace for each packet queued.
 pub enum CopyMode {
@@ -67,7 +67,7 @@ impl<F: PacketHandler> Drop for Queue<F> {
 impl<F: PacketHandler> Queue<F> {
     #[doc(hidden)]
     pub fn new(handle: *mut nfq_handle,
-               queue_number: uint16_t,
+               queue_number: u16,
                packet_handler: F) -> Result<Box<Queue<F>>, Error> {
         let _lock = LOCK.lock().unwrap();
 
@@ -100,11 +100,11 @@ impl<F: PacketHandler> Queue<F> {
             CopyMode::None => NFQNL_COPY_NONE,
             CopyMode::Metadata => NFQNL_COPY_META,
             CopyMode::Packet(_) => NFQNL_COPY_PACKET
-        } as uint8_t;
+        };
         let range = match mode {
             CopyMode::Packet(r) => r,
             _ => 0
-        } as uint32_t;
+        } as u32;
 
         let res = unsafe { nfq_set_mode(self.ptr, copy_mode, range) };
         if res != 0 {

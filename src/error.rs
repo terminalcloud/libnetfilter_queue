@@ -41,7 +41,7 @@ impl Base for Error {
     fn description(&self) -> &str {
         self.description.as_ref()
     }
-    fn cause(&self) -> Option<&Base> {
+    fn cause(&self) -> Option<&dyn Base> {
         None
     }
 }

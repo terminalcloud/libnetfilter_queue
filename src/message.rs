@@ -105,6 +105,10 @@ impl<'a> Message<'a> {
     /// The best way to do this is with the `queue_builder.set_copy_mode_sized_to_payload`
     /// and `handle.start_sized_to_payload` methods.
     /// See `examples/get_addrs.rs`.
+    ///
+    /// # Safety
+    ///
+    /// ffi call to C.
     pub unsafe fn payload<A: Payload>(&self) -> Result<(&A, usize), Error> {
         let mut data: *mut A = null_mut();
         let ptr: *mut *mut A = &mut data;

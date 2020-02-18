@@ -55,9 +55,9 @@ impl Verdict {
     /// The `packet_id` must be used to identify a packet, fetched from `packet.header.id()`.
     /// For simpler cases, pass `data_len = 0` and `buffer = std::ptr::null()`.
     pub fn set_verdict(qh: QueueHandle, packet_id: u32, verdict: Verdict, data_len: u32, buffer: *const c_uchar) -> Result<c_int, Error> {
-	let c_verdict = verdict.as_i32() as int32_t;
+	let c_verdict = verdict.as_i32() as u32;
 
-        match unsafe { nfq_set_verdict(qh.0, packet_id as uint32_t, c_verdict as uint32_t, data_len as uint32_t, buffer) } {
+        match unsafe { nfq_set_verdict(qh.0, packet_id, c_verdict, data_len, buffer) } {
             -1 => Err(error(Reason::SetVerdict, "Failed to set verdict", None)),
             r @ _ => Ok(r)
         }
