@@ -16,6 +16,7 @@ use ffi::*;
 /// Protocol Family
 ///
 /// NFQueue will only deal with IP, so only those families are made available.
+#[derive(Clone,Copy)]
 pub enum ProtocolFamily {
     /// IPv4 Address Family
     INET = AF_INET as isize,
@@ -58,7 +59,8 @@ impl Handle {
     pub fn bind(&mut self, proto: ProtocolFamily) -> Result<(), Error> {
         let _lock = LOCK.lock().unwrap();
 
-        let res = unsafe { nfq_bind_pf(self.ptr, proto as uint16_t) };
+        unsafe { nfq_unbind_pf(self.ptr, proto as u16) };
+        let res = unsafe { nfq_bind_pf(self.ptr, proto as u16) };
         if res < 0 {
             Err(error(Reason::Bind, "Failed to bind handle", Some(res)))
         } else {
@@ -72,7 +74,7 @@ impl Handle {
     pub fn unbind(&mut self, proto: ProtocolFamily) -> Result<(), Error> {
         let _lock = LOCK.lock().unwrap();
 
-        let res = unsafe { nfq_unbind_pf(self.ptr, proto as uint16_t) };
+        let res = unsafe { nfq_unbind_pf(self.ptr, proto as u16) };
         if res < 0 {
             Err(error(Reason::Unbind, "Failed to unbind handle", Some(res)))
         } else {
@@ -84,7 +86,7 @@ impl Handle {
     pub fn queue<F: PacketHandler>(&mut self,
                                    queue_number: u16,
                                    handler: F) -> Result<Box<Queue<F>>, Error> {
-        Queue::new(self.ptr, queue_number as uint16_t, handler)
+        Queue::new(self.ptr, queue_number, handler)
     }
 
     /// Start listening using any attached queues
@@ -95,14 +97,14 @@ impl Handle {
     pub fn start(&mut self, length: u16) -> Result<(), Error> {
         unsafe {
             // TODO: Get rid of malloc
-            let buffer: *mut c_void = malloc(length as u64);
+            let buffer: *mut c_void = malloc(length as usize);
             if buffer.is_null() {
                 panic!("Failed to allocate packet buffer");
             }
             let fd = nfq_fd(self.ptr);
 
             loop {
-                match recv(fd, buffer, length as u64, 0) {
+                match recv(fd, buffer, length as usize, 0) {
                     rv if rv >=0 => { 
                         nfq_handle_packet(self.ptr, buffer as *mut c_char, length as i32);
                     },
